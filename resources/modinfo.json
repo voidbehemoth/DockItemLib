@@ -1,0 +1,12 @@
+{
+    "HarmonyId": "voidbehemoth.dockitemslib",
+    "DisplayName": "DockItemsLib",
+    "Authors": [
+      "VoidBehemoth"
+    ],
+    "Description": "A library for adding new DockItems in SML.",
+    "Version": "1.0.0",
+    "RequiredMods": [],
+    "Settings": {}
+  }
+  

@@ -1,0 +1,71 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard21</TargetFramework>
+    <AssemblyName>DockItemLib</AssemblyName>
+    <Description>A library for the SalemModLoader.</Description>
+    <Version>0.1.0</Version>
+    <Nullable>disable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>10.0</LangVersion>
+    <Optimize>true</Optimize>
+	  <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+    <RestoreAdditionalProjectSources>
+      https://api.nuget.org/v3/index.json;
+      https://nuget.bepinex.dev/v3/index.json
+    </RestoreAdditionalProjectSources>
+    <RootNamespace>DockItemLib</RootNamespace>
+
+    <!--  SML GH Link  -->
+	  <SalemModLoaderLink>https://github.com/Curtbot9000/SalemModLoader/releases/latest/download/SalemModLoader.dll</SalemModLoaderLink>
+  </PropertyGroup>
+
+  <!-- Steam Library Path -->
+  <Import Project="$(MSBuildThisFileDirectory)\SteamLibrary.targets"/>
+
+  <ItemGroup>
+    <EmbeddedResource Include="resources\modinfo.json" />
+  </ItemGroup>
+  
+  
+  <ItemGroup>
+    <PackageReference Include="HarmonyX" Version="2.10.2" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+
+    <Reference Include="Assembly-CSharp" Publicize="true">
+      <HintPath>.\libs\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    
+    <Reference Include="UnityEngine">
+      <HintPath>.\libs\UnityEngine.dll</HintPath>
+    </Reference>
+
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>.\libs\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+
+    <Reference Include="UnityEngine.UI">
+      <HintPath>.\libs\UnityEngine.UI.dll</HintPath>
+    </Reference>
+
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>.\libs\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    
+  </ItemGroup>
+
+  <Target Name="PrepareBuildFiles" AfterTargets="BeforeBuild">
+    <DownloadFile SourceUrl="$(SalemModLoaderLink)" DestinationFolder="$(MSBuildThisFileDirectory)\libs" SkipUnchangedFiles="true">
+      <Output TaskParameter="DownloadedFile" ItemName="Content" />
+		</DownloadFile>
+    
+    <Exec Command="cp -f &quot;$(SteamLibraryPath)/steamapps/common/Town of Salem 2/TownOfSalem2.app/Contents/Resources/Data/Managed/@(Reference -> '%(Identity)').dll&quot; ./libs" Condition=" '%(Identity)' != '' And '$(OS)' != 'Windows_NT' " IgnoreExitCode="true"/>
+    <Exec Command="robocopy &quot;$(SteamLibraryPath)/steamapps/common/Town of Salem 2/TownOfSalem2.app/Contents/Resources/Data/Managed&quot; .\libs @(Reference -> '%(Identity)').dll /j /mt" Condition=" '%(Identity)' != '' And '$(OS)' == 'Windows_NT'" IgnoreExitCode="true"/>
+  </Target>
+</Project>
