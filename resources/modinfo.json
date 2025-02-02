@@ -7,6 +7,7 @@
     "Description": "A library for adding new DockItems in SML.",
     "Version": "1.0.0",
     "RequiredMods": [],
-    "Settings": {}
+    "Settings": {},
+    "ModLib": true
   }
   
