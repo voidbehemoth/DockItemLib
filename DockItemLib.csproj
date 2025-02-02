@@ -68,4 +68,26 @@
     <Exec Command="cp -f &quot;$(SteamLibraryPath)/steamapps/common/Town of Salem 2/TownOfSalem2.app/Contents/Resources/Data/Managed/@(Reference -> '%(Identity)').dll&quot; ./libs" Condition=" '%(Identity)' != '' And '$(OS)' != 'Windows_NT' " IgnoreExitCode="true"/>
     <Exec Command="robocopy &quot;$(SteamLibraryPath)/steamapps/common/Town of Salem 2/TownOfSalem2.app/Contents/Resources/Data/Managed&quot; .\libs @(Reference -> '%(Identity)').dll /j /mt" Condition=" '%(Identity)' != '' And '$(OS)' == 'Windows_NT'" IgnoreExitCode="true"/>
   </Target>
+
+    <Target Name="PrepareBuildFiles" AfterTargets="BeforeBuild">
+    <DownloadFile SourceUrl="$(SalemModLoaderLink)" DestinationFolder="$(MSBuildThisFileDirectory)\libs" SkipUnchangedFiles="true">
+      <Output TaskParameter="DownloadedFile" ItemName="Content" />
+		</DownloadFile>
+    
+    <!-- Copy over internal libraries -->
+    <Copy SourceFiles="@(Reference -> '$(SteamLibraryPath)/steamapps/common/Town of Salem 2/TownOfSalem2_Data/Managed/%(Identity).dll')" DestinationFolder="./libs" Condition="'$(SteamLibraryPath)' != '' And '%(Identity)' != '' And '$(OS)' == 'Windows_NT' And Exists(@(Reference -> '$(SteamLibraryPath)/steamapps/common/Town of Salem 2/TownOfSalem2_Data/Managed/%(Identity).dll'))" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(Reference -> '$(SteamLibraryPath)/steamapps/common/Town of Salem 2/TownOfSalem2.app/Contents/Data/Managed/%(Identity).dll')" DestinationFolder="./libs" Condition="'$(SteamLibraryPath)' != '' And '%(Identity)' != '' And '$(OS)' != 'Windows_NT' And Exists(@(Reference -> '$(SteamLibraryPath)/steamapps/common/Town of Salem 2/TownOfSalem2.app/Contents/Data/Managed/%(Identity).dll'))" SkipUnchangedFiles="true" />
+    
+    <!-- Copy over mod dependencies -->
+    <Copy SourceFiles="@(Reference -> '$(SteamLibraryPath)/steamapps/common/Town of Salem 2/SalemModLoader/Mods/%(Identity).dll')" DestinationFolder="./libs" Condition="'$(SteamLibraryPath)' != '' And '%(Identity)' != '' And '$(OS)' == 'Windows_NT' And Exists(@(Reference -> '$(SteamLibraryPath)/steamapps/common/Town of Salem 2/SalemModLoader/Mods/%(Identity).dll'))" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(Reference -> '$(SteamLibraryPath)/steamapps/common/Town of Salem 2/TownOfSalem2.app/Contents/SalemModLoader/Mods/%(Identity).dll')" DestinationFolder="./libs" Condition="'$(SteamLibraryPath)' != '' And '%(Identity)' != '' And '$(OS)' != 'Windows_NT' And Exists(@(Reference -> '$(SteamLibraryPath)/steamapps/common/Town of Salem 2/TownOfSalem2.app/Contents/SalemModLoader/Mods/%(Identity).dll'))" SkipUnchangedFiles="true" />
+
+    <!-- Copy over external libraries -->
+    <Copy SourceFiles="@(Reference -> '$(SteamLibraryPath)/steamapps/common/Town of Salem 2/SalemModLoader/Libs/%(Identity).dll')" DestinationFolder="./libs" Condition="'$(SteamLibraryPath)' != '' And '%(Identity)' != '' And '$(OS)' == 'Windows_NT' And Exists(@(Reference -> '$(SteamLibraryPath)/steamapps/common/Town of Salem 2/SalemModLoader/Libs/%(Identity).dll'))" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(Reference -> '$(SteamLibraryPath)/steamapps/common/Town of Salem 2/TownOfSalem2.app/Contents/SalemModLoader/Libs/%(Identity).dll')" DestinationFolder="./libs" Condition="'$(SteamLibraryPath)' != '' And '%(Identity)' != '' And '$(OS)' != 'Windows_NT' And Exists(@(Reference -> '$(SteamLibraryPath)/steamapps/common/Town of Salem 2/TownOfSalem2.app/Contents/SalemModLoader/Libs/%(Identity).dll'))" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="Copy" AfterTargets="Build" Condition="'$(SteamLibraryPath)' != ''">
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(SteamLibraryPath)/steamapps/common/Town of Salem 2/SalemModLoader/Mods"></Copy>
+  </Target>
 </Project>

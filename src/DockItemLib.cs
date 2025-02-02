@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using TMPro;
 using Game.Interface;
 using HarmonyLib;
-using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using TMPro;
-using static Home.Services.InputService;
+using DockItemLib.API;
 
 namespace DockItemLib
 {
     public class DockItemCore {
         public static List<CustomDockItem> customDockItems = new();
-
-
     }
 
     [HarmonyPatch(typeof(HudDockPanel))]
@@ -32,7 +28,7 @@ namespace DockItemLib
 
         private static void AddDockItem(HudDockPanel __instance, CustomDockItem customDockItem) {
 
-            if (!customDockItem.checker() || customDockItem.dockItem != null) return;
+            if (!customDockItem.condition() || customDockItem.dockItem != null) return;
 
             HudDockItem dockItem = UnityEngine.Object.Instantiate(__instance.dockItems[1]);
 
@@ -77,31 +73,6 @@ namespace DockItemLib
             dockItem.SetupTriggers();
 
             customDockItem.dockItem = dockItem;
-        }
-    }
-
-    public class CustomDockItem
-    {
-        public string name;
-        public string label;
-        public string localizationKey;
-        public Sprite sprite;
-        public HotKey.HotKeyType hotKeyType;
-        public Action listener;
-        public Func<bool> checker;
-
-        public HudDockItem dockItem;
-
-        public CustomDockItem(string name, string label, string localizationKey, Sprite sprite, HotKey.HotKeyType hotKeyType, Action listener, Func<bool> checker) {
-            this.name = name;
-            this.label = label;
-            this.localizationKey = localizationKey;
-            this.sprite = sprite;
-            this.hotKeyType = hotKeyType;
-            this.listener = listener;
-            this.checker = checker;
-
-            DockItemCore.customDockItems.Add(this);
         }
     }
 }
